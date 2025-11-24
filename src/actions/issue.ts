@@ -1,7 +1,9 @@
 'use server';
 
+import { PAGES } from '@/configs/pages.config';
 import prisma from '@/lib/prisma';
 import { createIssueSchema, TCreateIssue } from '@/schemas/issue.schema';
+import { revalidatePath } from 'next/cache';
 
 export async function createIssue(values: TCreateIssue) {
   try {
@@ -28,12 +30,22 @@ export async function createIssue(values: TCreateIssue) {
       };
     }
 
-    return { issue };
-  } catch (error) {
-    console.log(error);
+    revalidatePath(PAGES.ISSUES);
 
     return {
-      error,
+      success: { data: issue },
+    };
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error) {
+      return {
+        error,
+      };
+    }
+
+    return {
+      error: new Error('Failed to create issue'),
     };
   }
 }

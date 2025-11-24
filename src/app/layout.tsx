@@ -2,8 +2,6 @@
 import '@radix-ui/themes/styles.css';
 // @ts-expect-error - global CSS side-effect import has no type declarations
 import './globals.css';
-// @ts-expect-error - theme config
-import './theme-config.css';
 // @ts-expect-error - easymde
 import 'easymde/dist/easymde.min.css';
 
@@ -11,7 +9,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
 import Navbar from '@/components/navbar';
-import { Theme, ThemePanel } from '@radix-ui/themes';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,13 +28,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={inter.variable}>
+    <html lang='en' className={inter.variable} suppressHydrationWarning>
       <body className={`antialiased`}>
-        <Theme accentColor='iris' grayColor='mauve'>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
           <Navbar />
           <main className='px-4'>{children}</main>
-          <ThemePanel />
-        </Theme>
+        </ThemeProvider>
       </body>
     </html>
   );
