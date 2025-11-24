@@ -4,6 +4,8 @@ import '@radix-ui/themes/styles.css';
 import './globals.css';
 // @ts-expect-error - theme config
 import './theme-config.css';
+// @ts-expect-error - easymde
+import 'easymde/dist/easymde.min.css';
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';

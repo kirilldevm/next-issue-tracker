@@ -1,5 +1,9 @@
-import { Button, TextArea, TextField } from '@radix-ui/themes';
+'use client';
+
+import { Button, TextField } from '@radix-ui/themes';
 import { BiGlasses } from 'react-icons/bi';
+import SimpleMdeReact from 'react-simplemde-editor';
+
 
 export default function NewIssuePage() {
   return (
@@ -9,7 +13,7 @@ export default function NewIssuePage() {
           <BiGlasses />
         </TextField.Slot>
       </TextField.Root>
-      <TextArea placeholder='Description' />
+      <SimpleMdeReact placeholder='Description...' />
       <Button className=''>Submit</Button>
     </div>
   );
