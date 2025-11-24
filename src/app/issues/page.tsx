@@ -1,13 +1,18 @@
+import IssuesTable from '@/components/issues/issues-table';
+import { Button } from '@/components/ui/button';
 import { PAGES } from '@/configs/pages.config';
-import { Button } from '@radix-ui/themes';
+import { getAllIssues } from '@/lib/db/issues';
 import Link from 'next/link';
 
-export default function IssuesPage() {
+export default async function IssuesPage() {
+  const issues = await getAllIssues();
   return (
     <div>
-      <Button>
+      <Button asChild>
         <Link href={PAGES.NEW_ISSUE}>New Issue</Link>
       </Button>
+
+      <IssuesTable issues={issues} />
     </div>
   );
 }

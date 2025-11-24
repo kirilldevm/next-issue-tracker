@@ -18,6 +18,8 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import { useRouter } from 'next/navigation';
+import { Callout } from '@radix-ui/themes';
+import Spinner from '../shared/spinner';
 
 export default function CreateIssueForm() {
   const [error, setError] = useState<string | null>(null);
@@ -45,53 +47,57 @@ export default function CreateIssueForm() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        className='space-y-3 max-w-4xl'
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <FormField
-          control={form.control}
-          name='title'
-          render={({ field }) => (
-            <FormItem>
-              <span className='inline-flex self-end'>
-                <FormLabel>Title</FormLabel>
-              </span>
-              <FormControl>
-                <Input {...field} placeholder='Title...' />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className='max-w-4xl'>
+      {error && (
+        <Callout.Root color='red' className='mb-3'>
+          <Callout.Text>{error}</Callout.Text>
+        </Callout.Root>
+      )}
 
-        <FormField
-          control={form.control}
-          name='description'
-          render={({ field }) => (
-            <FormItem>
-              <span className='inline-flex self-end'>
-                <FormLabel>Description</FormLabel>
-              </span>
-              <FormControl>
-                <MarkdownEditor
-                  {...field}
-                  placeholder='Description...'
-                  options={{
-                    theme: theme === 'light' ? 'light' : 'dark',
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type='submit' disabled={pending}>
-          {pending ? 'Creating...' : 'Create'}
-        </Button>
-        {error && <p className='bg-destructive/80 p-4 text-primary'>{error}</p>}
-      </form>
-    </Form>
+      <Form {...form}>
+        <form className='space-y-3 ' onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name='title'
+            render={({ field }) => (
+              <FormItem>
+                <span className='inline-flex self-end'>
+                  <FormLabel>Title</FormLabel>
+                </span>
+                <FormControl>
+                  <Input {...field} placeholder='Title...' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='description'
+            render={({ field }) => (
+              <FormItem>
+                <span className='inline-flex self-end'>
+                  <FormLabel>Description</FormLabel>
+                </span>
+                <FormControl>
+                  <MarkdownEditor
+                    {...field}
+                    placeholder='Description...'
+                    options={{
+                      theme: theme === 'light' ? 'light' : 'dark',
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type='submit' disabled={pending}>
+            {pending ? <Spinner /> : 'Create'}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

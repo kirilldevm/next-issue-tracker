@@ -16,7 +16,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className='flex flex-row gap-4 justify-between border-b border-zinc-200 p-4 mb-5'>
+    <nav className='flex flex-row gap-4 justify-between border-b border-border p-4 mb-5'>
       <Link href={PAGES.HOME}>
         <AiFillBug size={32} />
       </Link>
@@ -26,9 +26,9 @@ export default function Navbar() {
             <Link
               href={link.href}
               className={classNames({
-                'text-zinc-900': pathname === link.href,
-                'text-zinc-500': pathname !== link.href,
-                'hover:text-zinc-800 transition-colors duration-200 ease-in-out':
+                'text-primary hover:text-primary/80': pathname === link.href,
+                'text-secondary-foreground': pathname !== link.href,
+                'hover:text-muted-foreground transition-colors duration-200 ease-in-out':
                   true,
               })}
             >
