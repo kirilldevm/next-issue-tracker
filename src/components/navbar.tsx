@@ -9,6 +9,7 @@ import { AiFillBug } from 'react-icons/ai';
 const links = [
   { name: 'Home', href: PAGES.HOME },
   { name: 'Dashboard', href: PAGES.DASHBOARD },
+  { name: 'Issues', href: PAGES.ISSUES },
 ];
 
 export default function Navbar() {

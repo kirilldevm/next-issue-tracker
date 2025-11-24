@@ -7,4 +7,5 @@ export const PAGES = {
   REGISTER: '/register',
 
   ISSUES: '/issues',
+  NEW_ISSUE: '/issues/new',
 };
