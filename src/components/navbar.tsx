@@ -23,6 +23,7 @@ export default function Navbar() {
         {links.map((link) => (
           <li key={link.name}>
             <Link
+              href={link.href}
               className={classNames({
                 'text-zinc-900': pathname === link.href,
                 'text-zinc-500': pathname !== link.href,
