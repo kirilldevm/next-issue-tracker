@@ -1,5 +1,5 @@
-import CreateIssueForm from '@/components/issues/create-issue-form';
+import IssueForm from '@/components/issues/issue-form';
 
 export default function NewIssuePage() {
-  return <CreateIssueForm />;
+  return <IssueForm />;
 }

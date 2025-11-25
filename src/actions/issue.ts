@@ -49,3 +49,51 @@ export async function createIssue(values: TCreateIssue) {
     };
   }
 }
+
+export async function updateIssue(values: TCreateIssue, id: string) {
+  try {
+    const validated = createIssueSchema.safeParse(values);
+
+    if (!validated.success) {
+      return {
+        error: validated.error,
+      };
+    }
+
+    const { title, description } = validated.data;
+
+    const issue = await prisma.issue.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        description,
+      },
+    });
+
+    if (!issue) {
+      return {
+        error: new Error('Failed to update issue'),
+      };
+    }
+
+    revalidatePath(PAGES.ISSUES);
+
+    return {
+      success: { data: issue },
+    };
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error) {
+      return {
+        error,
+      };
+    }
+
+    return {
+      error: new Error('Failed to update issue'),
+    };
+  }
+}

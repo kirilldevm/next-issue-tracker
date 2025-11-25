@@ -1,13 +1,13 @@
 'use client';
 
-import { createIssue } from '@/actions/issue';
+import { createIssue, updateIssue } from '@/actions/issue';
 import { createIssueSchema, TCreateIssue } from '@/schemas/issue.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Callout } from '@radix-ui/themes';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import SimpleMDE from 'react-simplemde-editor';
+import MarkdownEditor from '../shared/mardown-editor';
 import Spinner from '../shared/spinner';
 import { Button } from '../ui/button';
 import {
@@ -19,29 +19,44 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import MarkdownEditor from '../shared/mardown-editor';
+import { Issue } from '@prisma/client';
 
-export default function CreateIssueForm() {
+export default function IssueForm({ issue }: { issue?: Issue }) {
+  const isEditing = !!issue;
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const form = useForm<TCreateIssue>({
     resolver: zodResolver(createIssueSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-    },
+    defaultValues: isEditing
+      ? { title: issue?.title, description: issue?.description }
+      : {
+          title: '',
+          description: '',
+        },
   });
 
   function onSubmit(data: TCreateIssue) {
     startTransition(() => {
-      createIssue(data).then((res) => {
-        if (res.error) {
-          setError(res.error.message);
-        } else {
-          router.push(`/issues/${res.success.data.id}`);
-        }
-      });
+      setError(null);
+
+      if (isEditing) {
+        return updateIssue(data, issue!.id).then((res) => {
+          if (res.error) {
+            setError(res.error.message);
+          } else {
+            router.push(`/issues/${res.success.data.id}`);
+          }
+        });
+      } else {
+        createIssue(data).then((res) => {
+          if (res.error) {
+            setError(res.error.message);
+          } else {
+            router.push(`/issues/${res.success.data.id}`);
+          }
+        });
+      }
     });
   }
 
@@ -91,9 +106,21 @@ export default function CreateIssueForm() {
               </FormItem>
             )}
           />
-          <Button type='submit' disabled={pending}>
-            {pending ? <Spinner /> : 'Create'}
-          </Button>
+
+          <div className='flex gap-4 justify-end'>
+            <Button type='reset' variant='outline' onClick={() => form.reset()}>
+              Cancel
+            </Button>
+            <Button type='submit' disabled={pending}>
+              {pending ? (
+                <Spinner />
+              ) : isEditing ? (
+                'Update Issue'
+              ) : (
+                'Create Issue'
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
