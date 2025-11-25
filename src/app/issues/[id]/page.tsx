@@ -1,14 +1,9 @@
 import IssueStatusBadge from '@/components/issues/issue-status-badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getIssueById } from '@/lib/db/issues';
-import { Heading, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -31,9 +26,11 @@ export default async function Page({ params }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Description</CardTitle>
+          <CardTitle className='text-muted-foreground'>Description:</CardTitle>
         </CardHeader>
-        <CardContent>{issue.description}</CardContent>
+        <CardContent className='prose dark:prose-invert'>
+          <ReactMarkdown>{issue.description}</ReactMarkdown>
+        </CardContent>
       </Card>
     </div>
   );

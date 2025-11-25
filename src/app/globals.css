@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
@@ -149,13 +150,21 @@
 .editor-toolbar button {
   color: var(--foreground) !important;
 }
+.editor-toolbar button.active {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
 .editor-toolbar button:hover {
   background-color: var(--background) !important;
   border: 1px solid var(--border) !important;
 }
 
-.fa-heading {
-  color: var(--foreground) !important;
-  height: 20px !important;
-  width: 20px !important;
+.editor-preview-active {
+  background-color: var(--foreground) !important;
+  color: var(--background) !important;
+}
+
+.CodeMirror-selectedtext {
+  background-color: var(--muted/20) !important;
+  color: var(--primary) !important;
 }

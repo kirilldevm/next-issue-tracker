@@ -3,10 +3,12 @@
 import { createIssue } from '@/actions/issue';
 import { createIssueSchema, TCreateIssue } from '@/schemas/issue.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTheme } from 'next-themes';
+import { Callout } from '@radix-ui/themes';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import MarkdownEditor from '../shared/markdown-editor';
+import SimpleMDE from 'react-simplemde-editor';
+import Spinner from '../shared/spinner';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -17,15 +19,11 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import { useRouter } from 'next/navigation';
-import { Callout } from '@radix-ui/themes';
-import Spinner from '../shared/spinner';
 
 export default function CreateIssueForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
-  const { theme } = useTheme();
   const form = useForm<TCreateIssue>({
     resolver: zodResolver(createIssueSchema),
     defaultValues: {
@@ -81,12 +79,11 @@ export default function CreateIssueForm() {
                   <FormLabel>Description</FormLabel>
                 </span>
                 <FormControl>
-                  <MarkdownEditor
-                    {...field}
+                  <SimpleMDE
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     placeholder='Description...'
-                    options={{
-                      theme: theme === 'light' ? 'light' : 'dark',
-                    }}
                   />
                 </FormControl>
                 <FormMessage />
