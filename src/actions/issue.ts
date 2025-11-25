@@ -1,11 +1,17 @@
 'use server';
 
 import { PAGES } from '@/configs/pages.config';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { createIssueSchema, TCreateIssue } from '@/schemas/issue.schema';
 import { revalidatePath } from 'next/cache';
 
-export async function createIssue(values: TCreateIssue) {
+export async function createIssue({
+  values,
+  userId,
+}: {
+  values: TCreateIssue;
+  userId: string;
+}) {
   try {
     const validated = createIssueSchema.safeParse(values);
 
@@ -21,6 +27,7 @@ export async function createIssue(values: TCreateIssue) {
       data: {
         title,
         description,
+        userId,
       },
     });
 
@@ -50,7 +57,15 @@ export async function createIssue(values: TCreateIssue) {
   }
 }
 
-export async function updateIssue(values: TCreateIssue, id: string) {
+export async function updateIssue({
+  values,
+  id,
+  userId,
+}: {
+  values: TCreateIssue;
+  id: string;
+  userId: string;
+}) {
   try {
     const validated = createIssueSchema.safeParse(values);
 
@@ -61,6 +76,18 @@ export async function updateIssue(values: TCreateIssue, id: string) {
     }
 
     const { title, description } = validated.data;
+
+    const issueExists = await prisma.issue.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!issueExists || issueExists.userId !== userId) {
+      return {
+        error: new Error('You are not authorized to update this issue'),
+      };
+    }
 
     const issue = await prisma.issue.update({
       where: {
@@ -98,7 +125,13 @@ export async function updateIssue(values: TCreateIssue, id: string) {
   }
 }
 
-export async function deleteIssue(id: string) {
+export async function deleteIssue({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) {
   try {
     const issue = await prisma.issue.delete({
       where: {

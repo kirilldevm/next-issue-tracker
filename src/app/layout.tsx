@@ -1,5 +1,5 @@
-import './globals.css';
 import 'easymde/dist/easymde.min.css';
+import './globals.css';
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -7,6 +7,7 @@ import { Inter } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import AuthProvider from '@/providers/auth-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,16 +29,20 @@ export default function RootLayout({
     <html lang='en' className={inter.variable} suppressHydrationWarning>
       <body className={`antialiased`}>
         <div className='flex flex-col h-screen'>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            // enableSystem
-            // disableTransitionOnChange
-          >
-            <Toaster richColors position='bottom-right' />
-            <Navbar />
-            <main className='px-4 md:px-6 xl:px-8 flex-1 py-6'>{children}</main>
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              // enableSystem
+              // disableTransitionOnChange
+            >
+              <Toaster richColors position='bottom-right' />
+              <Navbar />
+              <main className='container mx-auto px-4 md:px-6 xl:px-8 flex-1 py-6'>
+                {children}
+              </main>
+            </ThemeProvider>
+          </AuthProvider>
         </div>
       </body>
     </html>

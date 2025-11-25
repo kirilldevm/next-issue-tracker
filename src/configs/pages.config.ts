@@ -3,7 +3,7 @@ export const PAGES = {
 
   DASHBOARD: '/dashboard',
 
-  LOGIN: '/login',
+  SIGN_IN: '/signin',
   REGISTER: '/register',
 
   ISSUES: '/issues',

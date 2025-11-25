@@ -1,6 +1,5 @@
 import { Status } from '@prisma/client';
 import { Badge } from '../ui/badge';
-import { PropsWithChildren } from 'react';
 
 type Props = {
   status: Status;

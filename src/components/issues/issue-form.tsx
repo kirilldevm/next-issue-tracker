@@ -4,11 +4,12 @@ import { createIssue, updateIssue } from '@/actions/issue';
 import { createIssueSchema, TCreateIssue } from '@/schemas/issue.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Issue } from '@prisma/client';
-import { Callout } from '@radix-ui/themes';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import SimpleMDE from 'react-simplemde-editor';
+import { toast } from 'sonner';
 import Spinner from '../shared/spinner';
 import { Button } from '../ui/button';
 import {
@@ -20,7 +21,6 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import { toast } from 'sonner';
 
 export default function IssueForm({ issue }: { issue?: Issue }) {
   const isEditing = !!issue;
@@ -36,13 +36,18 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
           description: '',
         },
   });
+  const { data: session } = useSession();
 
   function onSubmit(data: TCreateIssue) {
     startTransition(() => {
       setError(null);
 
       if (isEditing) {
-        return updateIssue(data, issue!.id).then((res) => {
+        return updateIssue({
+          values: data,
+          id: issue!.id,
+          userId: session!.user.id,
+        }).then((res) => {
           if (res.error) {
             setError(res.error.message);
           } else {
@@ -50,7 +55,7 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
           }
         });
       } else {
-        createIssue(data).then((res) => {
+        createIssue({ values: data, userId: session!.user.id }).then((res) => {
           if (res.error) {
             setError(res.error.message);
             toast.error(res.error.message);
@@ -61,6 +66,8 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
       }
     });
   }
+
+  if (isEditing && session?.user.id !== issue?.userId) router.push('/issues');
 
   return (
     <div className='max-w-4xl'>

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { createIssueSchema } from '@/schemas/issue.schema';
 
 export async function POST(request: Request) {
@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     data: {
       title,
       description,
+      userId: body.userId,
     },
   });
 

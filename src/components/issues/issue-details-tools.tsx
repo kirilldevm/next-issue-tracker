@@ -18,22 +18,26 @@ import { useTransition } from 'react';
 import { deleteIssue } from '@/actions/issue';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function IssueDetailsTools({ issueId }: { issueId: string }) {
   const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
   const router = useRouter();
 
   function handleDeleteIssue() {
     startTransition(async () => {
-      await deleteIssue(issueId).then((res) => {
-        if (res.error) {
-          console.error(res.error.message);
-          toast.error(res.error.message);
-        } else {
-          toast.success('Issue deleted successfully');
-          router.push(PAGES.ISSUES);
+      await deleteIssue({ id: issueId, userId: session!.user.id }).then(
+        (res) => {
+          if (res.error) {
+            console.error(res.error.message);
+            toast.error(res.error.message);
+          } else {
+            toast.success('Issue deleted successfully');
+            router.push(PAGES.ISSUES);
+          }
         }
-      });
+      );
     });
   }
 
