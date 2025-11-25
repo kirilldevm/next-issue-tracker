@@ -1,47 +1,13 @@
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import Google from 'next-auth/providers/google';
-
-import bcrypt from 'bcryptjs';
+import authConfig from './auth.config';
+import { prisma } from './lib/prisma';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Credentials({
-      credentials: {
-        email: {
-          type: 'email',
-          label: 'Email',
-          placeholder: 'example@gmail.com',
-        },
-        password: {
-          type: 'password',
-          label: 'Password',
-          placeholder: '*****',
-        },
-      },
-      authorize: async (credentials) => {
-        let user = null;
-
-        if (!credentials || !credentials.email || !credentials.password) {
-          throw new Error('Invalid credentials.');
-        }
-
-        // logic to salt and hash password
-        const pwHash = bcrypt.hash(credentials.password, 10);
-
-        // logic to verify if the user exists
-        user = await getUserFromDb(credentials.email, pwHash);
-
-        if (!user) {
-          // No user found, so this is their first attempt to login
-          // Optionally, this is also the place you could do a user registration
-          throw new Error('Invalid credentials.');
-        }
-
-        // return user object with their profile data
-        return user;
-      },
-    }),
-    Google,
-  ],
+  adapter: PrismaAdapter(prisma),
+  pages: { signIn: '/login', error: '/error' },
+  session: {
+    strategy: 'jwt',
+  },
+  ...authConfig,
 });

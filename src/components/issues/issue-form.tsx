@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { toast } from 'sonner';
 
 export default function IssueForm({ issue }: { issue?: Issue }) {
   const isEditing = !!issue;
@@ -52,6 +53,7 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
         createIssue(data).then((res) => {
           if (res.error) {
             setError(res.error.message);
+            toast.error(res.error.message);
           } else {
             router.push(`/issues/${res.success.data.id}`);
           }
@@ -63,9 +65,9 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
   return (
     <div className='max-w-4xl'>
       {error && (
-        <Callout.Root color='red' className='mb-3'>
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+        <p className='text-primary-foreground bg-destructive px-4 py-2 rounded mb-3'>
+          {error}
+        </p>
       )}
 
       <Form {...form}>
