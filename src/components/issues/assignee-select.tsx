@@ -1,6 +1,11 @@
 'use client';
 
+import { updateIssue } from '@/actions/issue';
 import { useUsers } from '@/hooks/use-users';
+import { Issue } from '@prisma/client';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
 import {
   Select,
   SelectContent,
@@ -8,23 +13,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { api } from '@/lib/api';
-import { PAGES } from '@/configs/pages.config';
-import { Issue } from '@prisma/client';
-import { toast } from 'sonner';
+import { Skeleton } from '../ui/skeleton';
 
 export default function AssigneeSelect({ issue }: { issue: Issue }) {
   const { data: users, isPending, error } = useUsers();
   const { id: issueId, assignedToUserId } = issue;
+  const session = useSession();
+  const user = session?.data?.user;
 
-  if (isPending) return <p>Loading...</p>;
+  if (isPending)
+    return (
+      <Button variant={'secondary'}>
+        <Skeleton className='h-8 w-full' />
+      </Button>
+    );
   if (error) return null;
 
   async function handleAssignUser(userId: string) {
     try {
       const assignedToUserId = userId === 'none' ? null : userId;
-      await api.patch(`${PAGES.ISSUES}/${issueId}`, {
-        assignedToUserId,
+      await updateIssue({
+        values: { assignedToUserId },
+        id: issueId,
+        userId: user!.id,
       });
     } catch (error) {
       console.error(error);

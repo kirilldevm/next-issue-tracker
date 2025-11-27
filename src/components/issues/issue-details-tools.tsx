@@ -22,6 +22,7 @@ import {
 
 import AssigneeSelect from './assignee-select';
 import { Issue } from '@prisma/client';
+import StatusSelect from './status-select';
 
 type Props = {
   issue: Issue;
@@ -54,6 +55,7 @@ export default function IssueDetailsTools({ issue }: Props) {
       <Dialog>
         <div className='flex md:flex-col gap-4'>
           <AssigneeSelect issue={issue} />
+          <StatusSelect issue={issue} />
 
           <Button asChild>
             <Link href={`${PAGES.EDIT_ISSUE}/${issueId}`}>

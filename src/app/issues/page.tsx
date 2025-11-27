@@ -38,7 +38,7 @@ export default async function IssuesPage({ searchParams }: Props) {
   const totalIssues = await getAllIssues({ where });
 
   return (
-    <div className='flex flex-col gap-3'>
+    <div className='flex flex-col gap-5'>
       <IssueActions />
       <IssuesTable issues={issues} />
       <Pagination

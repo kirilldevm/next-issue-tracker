@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import {
   createIssueSchema,
   TCreateIssue,
+  TUpdateIssue,
   updateIssueSchema,
 } from '@/schemas/issue.schema';
 import { revalidatePath } from 'next/cache';
@@ -66,7 +67,7 @@ export async function updateIssue({
   id,
   userId,
 }: {
-  values: TCreateIssue;
+  values: TUpdateIssue;
   id: string;
   userId: string;
 }) {
