@@ -12,6 +12,7 @@ import {
 } from '../ui/table';
 import IssueStatusBadge from './issue-status-badge';
 import { IssueQuery } from '@/app/issues/page';
+import { PAGES } from '@/configs/pages.config';
 
 type Props = {
   issues: Issue[];
@@ -63,7 +64,9 @@ export default function IssuesTable({ issues, searchParams }: Props) {
       <TableBody>
         {issues.map((issue) => (
           <TableRow key={issue.id}>
-            <TableCell>{issue.title}</TableCell>
+            <TableCell>
+              <Link href={`${PAGES.ISSUES}/${issue.id}`}>{issue.title}</Link>
+            </TableCell>
             <TableCell>
               <IssueStatusBadge status={issue.status} />
             </TableCell>

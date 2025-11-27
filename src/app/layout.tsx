@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     template: '%s | Issue Tracker',
   },
   description: 'issue tracker helps you manage your issues.',
+  icons: '/favicon.ico',
 };
 
 export default function RootLayout({
