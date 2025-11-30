@@ -12,41 +12,31 @@ import { PAGES } from './configs/pages.config';
 const { auth } = NextAuth(authConfig);
 
 export const middleware = auth(async (req) => {
-  const { nextUrl } = req;
+  const url = req.nextUrl;
+  const pathname = url.pathname;
   const isLoggedIn = !!req.auth;
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
+  const isAuthRoute = authRoutes.includes(pathname);
+  const isPublicRoute = publicRoutes.includes(pathname);
 
-  if (isApiAuthRoute) {
-    return null;
+  if (isApiAuthRoute) return NextResponse.next();
+
+  // logged in and tries to visit /signin or /signup → redirect
+  if (isAuthRoute && isLoggedIn) {
+    const redirectUrl = new URL(DEFAULT_LOGIN_REDIRECT, url);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  if (isAuthRoute) {
-    if (isLoggedIn) {
-      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-    } else {
-      return null;
-    }
-  }
-
+  // not logged in and trying to access a protected route
   if (!isLoggedIn && !isPublicRoute) {
-    // Save the redirect Url after login
-    let callbackUrl = nextUrl.pathname;
-
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
-    }
-
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-    return NextResponse.redirect(
-      new URL(`${PAGES.SIGN_IN}?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
+    const callbackUrl = url.pathname + url.search;
+    const signInUrl = new URL(PAGES.SIGN_IN, url);
+    signInUrl.searchParams.set('callbackUrl', encodeURIComponent(callbackUrl));
+    return NextResponse.redirect(signInUrl);
   }
 
-  return null;
+  return NextResponse.next();
 });
 
 export const config = {

@@ -22,7 +22,7 @@ export async function createIssue({
 
     if (!validated.success) {
       return {
-        error: validated.error,
+        error: 'Invalid credentials',
       };
     }
 
@@ -38,7 +38,7 @@ export async function createIssue({
 
     if (!issue) {
       return {
-        error: new Error('Failed to create issue'),
+        error: 'Failed to create issue',
       };
     }
 
@@ -48,16 +48,14 @@ export async function createIssue({
       success: { data: issue },
     };
   } catch (error) {
-    console.error(error);
-
     if (error instanceof Error) {
       return {
-        error,
+        error: error.message,
       };
     }
 
     return {
-      error: new Error('Failed to create issue'),
+      error: 'Failed to create issue',
     };
   }
 }
@@ -76,11 +74,11 @@ export async function updateIssue({
 
     if (!validated.success) {
       return {
-        error: validated.error,
+        error: 'Invalid credentials',
       };
     }
 
-    const { title, description, assignedToUserId, status } = validated.data;
+    const { title, description, assignedToUserId, status } = values;
 
     if (assignedToUserId) {
       const assignedToUser = await prisma.user.findUnique({
@@ -91,7 +89,7 @@ export async function updateIssue({
 
       if (!assignedToUser) {
         return {
-          error: new Error('User not found'),
+          error: 'User does not exist',
         };
       }
     }
@@ -104,7 +102,7 @@ export async function updateIssue({
 
     if (!issueExists || issueExists.userId !== userId) {
       return {
-        error: new Error('You are not authorized to update this issue'),
+        error: 'You are not authorized to update this issue',
       };
     }
 
@@ -116,13 +114,13 @@ export async function updateIssue({
         title,
         description,
         assignedToUserId,
-        status,
+        status: status || issueExists.status,
       },
     });
 
     if (!issue) {
       return {
-        error: new Error('Failed to update issue'),
+        error: 'Failed to update issue',
       };
     }
 
@@ -136,12 +134,12 @@ export async function updateIssue({
 
     if (error instanceof Error) {
       return {
-        error,
+        error: error.message,
       };
     }
 
     return {
-      error: new Error('Failed to update issue'),
+      error: 'Failed to update issue',
     };
   }
 }
@@ -162,7 +160,7 @@ export async function deleteIssue({
 
     if (!issueExists || issueExists.userId !== userId) {
       return {
-        error: new Error('You are not authorized to delete this issue'),
+        error: 'You are not authorized to delete this issue',
       };
     }
 
@@ -174,7 +172,7 @@ export async function deleteIssue({
 
     if (!issue) {
       return {
-        error: new Error('Failed to delete issue'),
+        error: 'Failed to delete issue',
       };
     }
 
@@ -188,12 +186,12 @@ export async function deleteIssue({
 
     if (error instanceof Error) {
       return {
-        error,
+        error: error.message,
       };
     }
 
     return {
-      error: new Error('Failed to delete issue'),
+      error: 'Failed to delete issue',
     };
   }
 }

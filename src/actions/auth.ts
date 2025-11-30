@@ -1,7 +1,6 @@
 'use server';
 
 import { signIn } from '@/auth';
-import { PAGES } from '@/configs/pages.config';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import {
@@ -16,7 +15,7 @@ export async function signInAction(data: TLoginSchema) {
 
   if (!validatedValues.success) {
     return {
-      error: validatedValues.error,
+      error: 'Invalid credentials',
     };
   }
 
@@ -48,9 +47,17 @@ export async function signInAction(data: TLoginSchema) {
     await signIn('credentials', {
       email,
       password,
-      redirectTo: PAGES.HOME,
+      redirect: false,
     });
+
+    return {
+      success: { user },
+    };
   }
+
+  return {
+    error: 'Invalid credentials',
+  };
 }
 
 export async function signUpAction(data: TRegisterSchema) {
@@ -58,11 +65,17 @@ export async function signUpAction(data: TRegisterSchema) {
 
   if (!validatedValues.success) {
     return {
-      error: validatedValues.error,
+      error: 'Invalid credentials',
     };
   }
 
-  const { name, email, password } = validatedValues.data;
+  const { email, password, confirmPassword } = data;
+
+  if (password !== confirmPassword) {
+    return {
+      error: 'Passwords do not match',
+    };
+  }
 
   const existingUser = await prisma.user.findUnique({
     where: {
@@ -80,7 +93,6 @@ export async function signUpAction(data: TRegisterSchema) {
 
   const user = await prisma.user.create({
     data: {
-      name,
       email,
       hashedPassword,
     },
@@ -95,6 +107,10 @@ export async function signUpAction(data: TRegisterSchema) {
   await signIn('credentials', {
     email,
     password,
-    redirectTo: PAGES.HOME,
+    redirect: false,
   });
+
+  return {
+    success: { user },
+  };
 }

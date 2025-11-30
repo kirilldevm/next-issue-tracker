@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props) {
   const issue = await getIssueById(id);
 
   return {
-    title: `Edit issue - ${issue?.title} | Issue Tracker`,
+    title: `Edit issue - ${issue?.title}`,
   };
 }
 

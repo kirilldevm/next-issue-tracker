@@ -4,12 +4,12 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   experimental: {},
 
-  // webpack: (config, { isServer }) => {
-  //   if (isServer) {
-  //     config.externals.push('@opentelemetry/instrumentation');
-  //   }
-  //   return config;
-  // },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@opentelemetry/instrumentation');
+    }
+    return config;
+  },
 };
 
 export default withSentryConfig(nextConfig, {
